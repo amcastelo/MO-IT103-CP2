@@ -6,9 +6,7 @@
 2. Gross Wage Calculation   : Compute the gross wage based on the hourly rate and total hours worked.
 3. Net Wage Calculation.      :  Deduct taxes and other deductions to determine the net wage, ensuring accurate compensation for employees.
 
-
 ### Getting Started
-
 To run this MotorPH Payroll System, follow these simple steps:
 1. Ensure you have Java 21 installed on your system.
 2. If you want to contribute to the project, just click the fork button. It's in the middle of the watch and star buttons.
@@ -20,8 +18,3 @@ To run this MotorPH Payroll System, follow these simple steps:
 ### Members:
 1. Harvey Punsalan
 1. Adam Martel Castelo
-  
-QA test:
-https://docs.google.com/spreadsheets/d/1_M6RCo2xv08aVHIyJU6bMNUgCzWkgkeEBih2p7CfpWc/edit?usp=sharing
-
-Edit test
