@@ -8,6 +8,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.*;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javax.swing.JTable;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 // This EmployeeFileManager class is responsible for loading Employee data from a text file
     public class EmployeeFileManager implements FileLoader{
@@ -15,34 +24,102 @@ import java.util.List;
         private static String TXT_FILE_PATH = "src/main/resources/Data.txt";
         private static final List<Employee> employees;
         
+        public static List<ObservableList<String>> cachedCSVData = new ArrayList<>();
+        public static String[] cachedHeaders;
+        
+
+        
     //INITIALIZE
     static {
             EmployeeFileManager empFile = new EmployeeFileManager();
             employees = empFile.loadFile();
     }
-
+    
     //LOADS EMPLOYEE DATA
     @Override
     public List<Employee> loadFile() {
-        //INITIALIZES NEW OBJECT ARRAY LIST
-        List<Employee> employees = new ArrayList<>();
-        
-        //TRIES TO OPEN AND LOAD TXT DATA THEN CLOSING RIGHT AFTER BY USING TRY-CATCH
-        try (BufferedReader reader = new BufferedReader(new FileReader(TXT_FILE_PATH))) {
-            String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
-                
-                List<String> employeeData = parseTxtLine(currentLine);
-                if (employeeData.size() >= 19) { // Assuming you expect 19 fields
-                    Employee employee = new Employee(employeeData.toArray(new String[0]));
-                    employees.add(employee);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return employees;      // This Return the list of loaded Employee objects
+    List<Employee> employees = new ArrayList<>();
+    cachedCSVData.clear();      // Clear previous cache
+    cachedHeaders = null;       // Reset cached headers
 
+    try (BufferedReader reader = new BufferedReader(new FileReader(TXT_FILE_PATH))) {
+        String headerLine = reader.readLine();
+        if (headerLine != null) {
+            cachedHeaders = headerLine.split(","); // Cache headers from the first line
+        }
+
+        String currentLine;
+        while ((currentLine = reader.readLine()) != null) {
+            List<String> employeeData = parseTxtLine(currentLine);
+            if (employeeData.size() >= 19) {
+                Employee employee = new Employee(employeeData.toArray(new String[0]));
+                employees.add(employee);
+
+                // Convert to ObservableList and cache it
+                ObservableList<String> observableRow = FXCollections.observableArrayList(employeeData);
+                cachedCSVData.add(observableRow);
+            }
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+    return employees;
+}
+    
+    public static void loadCached(TableView<ObservableList<String>> tableView) {
+            tableView.getItems().clear();
+            tableView.getColumns().clear();
+
+            if (EmployeeFileManager.cachedHeaders == null || EmployeeFileManager.cachedCSVData.isEmpty()) return;
+
+                for (int i = 0; i < EmployeeFileManager.cachedHeaders.length; i++) {
+                    final int colIndex = i;
+                    TableColumn<ObservableList<String>, String> column = new TableColumn<>(EmployeeFileManager.cachedHeaders[i]);
+                    column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(colIndex)));
+                    column.setCellFactory(TextFieldTableCell.forTableColumn());
+                    tableView.getColumns().add(column);
+                }
+
+            tableView.getItems().addAll(EmployeeFileManager.cachedCSVData);
+        }
+
+    public static void loadCachedSwing(JTable table) {
+        if (cachedHeaders == null || cachedCSVData.isEmpty()) return;
+
+        // Create a DefaultTableModel with cached headers as column names
+        DefaultTableModel model = new DefaultTableModel(cachedHeaders, 0);
+
+        // Add each row of data from cachedCSVData
+        for (ObservableList<String> row : cachedCSVData) {
+            model.addRow(row.toArray(new String[0]));
+        }
+
+        // Set model to the JTable
+        table.setModel(model);
+    }
+    
+    public static TableRowSorter<DefaultTableModel> searchSort(JTable table) {
+    if (cachedHeaders == null || cachedCSVData.isEmpty()) return null;
+
+    DefaultTableModel model = new DefaultTableModel(cachedHeaders, 0);
+        for (ObservableList<String> row : cachedCSVData) {
+            model.addRow(row.toArray(new String[0]));
+        }
+
+    table.setModel(model);
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+    table.setRowSorter(sorter);
+    return sorter;
+    }
+    
+    public static void filterByEmployeeID(JTable table, TableRowSorter<DefaultTableModel> sorter, String employeeID) {
+        if (employeeID.trim().isEmpty()) {
+            sorter.setRowFilter(null); // Show all if empty
+        } else {
+            // Only filter the first column (index 0) assuming it's Employee ID
+            sorter.setRowFilter(RowFilter.regexFilter("^" + employeeID + "$", 0));
+        }
     }
     
     //PARSE STRING SURROUNDED WITH QUOTATION MARKS WITH COMMAS INSIDE IT

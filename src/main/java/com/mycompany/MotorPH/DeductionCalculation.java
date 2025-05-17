@@ -10,10 +10,12 @@ import java.text.DecimalFormat;
  *
  * @author Isaac
  */
-public abstract class Calculation {
+public interface DeductionCalculation {
     
-    protected static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
-    
-    protected abstract double calculate();
+    DecimalFormat decimalFormat = new DecimalFormat("#.##");
+
+    default double calculate(double gross){
+        return 0;
+    };
     
 }

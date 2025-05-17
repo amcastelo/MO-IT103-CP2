@@ -23,8 +23,9 @@
             <!-- Add additional resource directories if necessary -->
         </resources>
     </build>
-    <name>MotorPH</name>
+
     <dependencies>
+        <!-- JUnit and Mockito dependencies (keep as is) -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -46,8 +47,28 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.12.4</version> <!-- Use the latest version -->
+            <version>3.12.4</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- JavaFX FXML dependency -->
+        <dependency>
+            <groupId>org.jfxcore</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>18-ea+1</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>3.6</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.pushing-pixels</groupId>
+            <artifactId>trident</artifactId>
+            <version>1.2</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 </project>

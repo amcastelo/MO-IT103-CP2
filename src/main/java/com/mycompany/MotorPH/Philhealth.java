@@ -5,13 +5,12 @@
 package com.mycompany.MotorPH;
 
 // This Philhealth class extends Calculation and calculates the Philhealth deduction for an employee.
-public class Philhealth extends Calculation {
+public class Philhealth implements DeductionCalculation {
     
     private static double philhealthDeduction;
 
     @Override
-     public double calculate() {
-        double gross = Grosswage.gross;
+     public double calculate(double gross) {
         double PhilDed;
         
         // If gross is more than 60,000 limit philhealth deduction to 1,800 max

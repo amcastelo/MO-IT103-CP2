@@ -8,70 +8,105 @@ package com.mycompany.MotorPH;
  *
  * @author Isaac
  */
-public class Netwage extends Calculation{
+public class Netwage {
+
+    private double sssData;
+    private double philhealthData;
+    private double pagibigData;
+    private double lateData;
+    private double totalDeduction;
+    private double net;
+    private double taxableIncome;
+    private double tax;
+    private String empName;
+    private Grosswage grosswage = new Grosswage();   
     
-    
-    @Override
-    public double calculate(){
-        //Initialize instances of each Java.class for usage. 
-        Calculation sss = new SSS();
-        Calculation philhealth = new Philhealth();
-        Calculation pagibig = new Pagibig();
-        Calculation withholdingTax = new WithholdingTax();
-        Calculation grosswage = new Grosswage();
-        Calculation latePenalty = new LatePenalty();
+    public double calculate(String empID, int month){ 
+        DeductionCalculation sss = new SSS();
+        DeductionCalculation philhealth = new Philhealth();
+        DeductionCalculation pagibig = new Pagibig();
+        
+        WithholdingTax withholdingTax = new WithholdingTax();
+        LatePenalty latePenalty = new LatePenalty();
         
         //Call grosswage calculation to prepare necessary values.
-        grosswage.calculate();
+        grosswage.calculate(empID, month);
         
         //Call the calculate() method of each class and assign their values to temporary variables.
-        double sssData = sss.calculate();
-        double philhealthData = philhealth.calculate();
-        double pagibigData = pagibig.calculate();
-        double lateData = latePenalty.calculate();
-        double totalDeduction = sssData + philhealthData + pagibigData + lateData;
+        sssData = sss.calculate(grosswage.getGross());
+        philhealthData = philhealth.calculate(grosswage.getGross());
+        pagibigData = pagibig.calculate(grosswage.getGross());
+        lateData = latePenalty.calculate(grosswage.getTargetEmployeeID(), grosswage.getTargetMonth(), grosswage.getHourly());
+        totalDeduction = getSssData() + getPhilhealthData() + getPagibigData() + getLateData();
+        empName = grosswage.getEmployeeName();
         
-        double net = withholdingTax.calculate();
-        
+        net = withholdingTax.calculate(grosswage.getGross(), grosswage.getTargetEmployeeID(), grosswage.getTargetMonth(), grosswage.getHourly());      
         //gets the value of taxableIncome and tax to be used for printing.
-        double taxableIncome = WithholdingTax.taxableIncome;
-        double tax = WithholdingTax.tax;
+        taxableIncome = WithholdingTax.taxableIncome;
+        tax = WithholdingTax.tax;
 
-        // This is used to Print the net wage along with other details
-        System.out.println("""
-                ------------------------------------------
-                Employee ID: %s
-                Employee Name: %s
-                ------------------------------------------
-                Total Hours: %s               
-                Gross Wage: $%s
-
-                SSS Deduction: $%s
-                Philhealth Deduction: $%s
-                Pag-Ibig Deduction: $%s                       
-                Late Deductions: $%s
-
-                Total Deductions: $%s                                  
-
-                Taxable Income: $%s
-
-                Withholding Tax: $%s
-
-                Net Wage: $%s
-                ------------------------------------------
-                """.formatted(Grosswage.getEmployeeID(),
-                Grosswage.employeeName,        
-                Grosswage.hours,
-                decimalFormat.format(Grosswage.gross),
-                decimalFormat.format(sssData),
-                decimalFormat.format(philhealthData),
-                decimalFormat.format(pagibigData),
-                decimalFormat.format(lateData),
-                decimalFormat.format(totalDeduction),
-                decimalFormat.format(taxableIncome),
-                decimalFormat.format(tax),
-                decimalFormat.format(net)
-        ));
-        return net;  // Return the net wage
+        return getNet();  // Return the net wage
     }
+        
+        /**
+     * @return the sssData
+     */
+    public double getSssData() {
+        return sssData;
+    }
+
+    /**
+     * @return the philhealthData
+     */
+    public double getPhilhealthData() {
+        return philhealthData;
+    }
+
+    /**
+     * @return the pagibigData
+     */
+    public double getPagibigData() {
+        return pagibigData;
+    }
+
+    /**
+     * @return the lateData
+     */
+    public double getLateData() {
+        return lateData;
+    }
+
+    /**
+     * @return the totalDeduction
+     */
+    public double getTotalDeduction() {
+        return totalDeduction;
+    }
+
+    /**
+     * @return the net
+     */
+    public double getNet() {
+        return net;
+    }
+
+    /**
+     * @return the taxableIncome
+     */
+    public double getTaxableIncome() {
+        return taxableIncome;
+    }
+
+    /**
+     * @return the tax
+     */
+    public double getTax() {
+        return tax;
+    }
+    
+    public String getEmpName() {
+        return empName;
+    }
+    
+    
 }

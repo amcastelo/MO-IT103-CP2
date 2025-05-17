@@ -5,12 +5,11 @@
 package com.mycompany.MotorPH;
 
 // Pagibig class extends Calculation and calculates the Pagibig deduction for an employee
-public class Pagibig extends Calculation {
+public class Pagibig implements DeductionCalculation {
     private static double pagibigDeduction;
     
     @Override
-    public double calculate(){
-        double gross = Grosswage.gross;
+    public double calculate(double gross){
         double pagibig;
 
         // Conditional statement to calculate the Pagibig deduction based on gross wage range

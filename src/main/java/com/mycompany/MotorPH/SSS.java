@@ -8,7 +8,7 @@ package com.mycompany.MotorPH;
 
 import java.util.List;
 
-public class SSS extends Calculation {
+public class SSS implements DeductionCalculation {
     
     
     private String compensationRange;
@@ -33,9 +33,8 @@ public class SSS extends Calculation {
     }
     
     @Override
-    public double calculate(){
-        double gross = Grosswage.gross;
-        
+    public double calculate(double gross){       
+       
         // Iterates through every compensation range to get the proper contribution.
         for (SSS record : sssDeductionRecords) {
             double[] range = parseSssCompensationRange(record.getCompensationRange());

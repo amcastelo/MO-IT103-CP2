@@ -5,22 +5,21 @@
     package com.mycompany.MotorPH;
 
     // This WithholdingTax class extends Calculation and calculates the withholding tax for an employee
-    public class WithholdingTax extends Calculation{
+    public class WithholdingTax {
         public static double tax, taxableIncome, afterTax;
         
-        @Override
-        public double calculate(){
+        public double calculate(double gross, String empID, int month, double hourly){
             // Initialize other deductions to call their calculate() method.
-            Calculation sss = new SSS();
-            Calculation philhealth = new Philhealth();
-            Calculation pagibig = new Pagibig();           
-            Calculation latePenalty = new LatePenalty();
+            DeductionCalculation sss = new SSS();
+            DeductionCalculation philhealth = new Philhealth();
+            DeductionCalculation pagibig = new Pagibig();           
+            LatePenalty latePenalty = new LatePenalty();
             
             // Declare a temporary variable storing the total deduction.
-            double totalDeduction = sss.calculate() + philhealth.calculate() + pagibig.calculate() + latePenalty.calculate();
+            double totalDeduction = sss.calculate(gross) + philhealth.calculate(gross) + pagibig.calculate(gross) + latePenalty.calculate(empID, month, hourly);
             
             // Compute taxable income by getting value of gross wage minus totalDeduction.
-            taxableIncome = Grosswage.gross - totalDeduction;
+            taxableIncome = gross - totalDeduction;
             
             // Conditional statement to determine tax rate.
             if (taxableIncome <= 20832) {
@@ -42,7 +41,7 @@
                 tax = 200833.33 + (taxableIncome - 666667) * 0.35;
             }
             
-            double afterTax = taxableIncome - tax;
+            afterTax = taxableIncome - tax;
             
             // returns net.
         return afterTax;
