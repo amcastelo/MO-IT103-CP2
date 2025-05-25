@@ -1,10 +1,13 @@
-package com.mycompany.MotorPH;
+package com.mycompany.MotorPH.fxUI;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
  */
 
+import com.mycompany.MotorPH.Grosswage;
+import com.mycompany.MotorPH.Netwage;
+import com.mycompany.MotorPH.fxUI.MainPageController;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;

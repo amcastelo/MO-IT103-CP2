@@ -1,4 +1,4 @@
-package com.mycompany.MotorPH;
+package com.mycompany.MotorPH.fxUI;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
