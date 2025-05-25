@@ -2,11 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
-package com.mycompany.MotorPH;
+package com.mycompany.MotorPH.swingui;
 
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.mycompany.MotorPH.Grosswage;
+import com.mycompany.MotorPH.Netwage;
 import java.awt.Color;
 import javafx.scene.control.Alert;
 import javax.swing.JOptionPane;
@@ -263,7 +265,6 @@ public class PayrollPanelSwing extends javax.swing.JPanel {
 
         empNameField.setEnabled(false);
 
-        monthField.setForeground(new java.awt.Color(204, 204, 204));
         monthField.setText("Enter Month...");
         monthField.setToolTipText("");
         monthField.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -282,7 +283,6 @@ public class PayrollPanelSwing extends javax.swing.JPanel {
             }
         });
 
-        empIDField.setForeground(new java.awt.Color(204, 204, 204));
         empIDField.setText("Enter Employee ID...");
         empIDField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {

@@ -1,5 +1,6 @@
 package com.mycompany.MotorPH;
 
+import com.mycompany.MotorPH.swingui.MotorPHAppSwing;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.UIManager;
