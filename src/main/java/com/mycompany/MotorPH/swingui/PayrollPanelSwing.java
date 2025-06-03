@@ -10,7 +10,6 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.mycompany.MotorPH.Grosswage;
 import com.mycompany.MotorPH.Netwage;
 import java.awt.Color;
-import javafx.scene.control.Alert;
 import javax.swing.JOptionPane;
 
 /**

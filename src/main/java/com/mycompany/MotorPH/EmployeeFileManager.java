@@ -8,11 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.*;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
@@ -24,7 +19,7 @@ import javax.swing.table.TableRowSorter;
         private static String TXT_FILE_PATH = "src/main/resources/Data.txt";
         private static final List<Employee> employees;
         
-        public static List<ObservableList<String>> cachedCSVData = new ArrayList<>();
+        public static List<List<String>> cachedCSVData = new ArrayList<>();
         public static String[] cachedHeaders;
         
 
@@ -55,9 +50,8 @@ import javax.swing.table.TableRowSorter;
                 Employee employee = new Employee(employeeData.toArray(new String[0]));
                 employees.add(employee);
 
-                // Convert to ObservableList and cache it
-                ObservableList<String> observableRow = FXCollections.observableArrayList(employeeData);
-                cachedCSVData.add(observableRow);
+                // Cache the data as regular List
+                cachedCSVData.add(new ArrayList<>(employeeData));
             }
         }
     } catch (IOException e) {
@@ -66,24 +60,7 @@ import javax.swing.table.TableRowSorter;
 
     return employees;
 }
-    
-    public static void loadCached(TableView<ObservableList<String>> tableView) {
-            tableView.getItems().clear();
-            tableView.getColumns().clear();
-
-            if (EmployeeFileManager.cachedHeaders == null || EmployeeFileManager.cachedCSVData.isEmpty()) return;
-
-                for (int i = 0; i < EmployeeFileManager.cachedHeaders.length; i++) {
-                    final int colIndex = i;
-                    TableColumn<ObservableList<String>, String> column = new TableColumn<>(EmployeeFileManager.cachedHeaders[i]);
-                    column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(colIndex)));
-                    column.setCellFactory(TextFieldTableCell.forTableColumn());
-                    tableView.getColumns().add(column);
-                }
-
-            tableView.getItems().addAll(EmployeeFileManager.cachedCSVData);
-        }
-
+    ///
     public static void loadCachedSwing(JTable table) {
         if (cachedHeaders == null || cachedCSVData.isEmpty()) return;
 
@@ -91,7 +68,7 @@ import javax.swing.table.TableRowSorter;
         DefaultTableModel model = new DefaultTableModel(cachedHeaders, 0);
 
         // Add each row of data from cachedCSVData
-        for (ObservableList<String> row : cachedCSVData) {
+        for (List<String> row : cachedCSVData) {
             model.addRow(row.toArray(new String[0]));
         }
 
@@ -100,17 +77,17 @@ import javax.swing.table.TableRowSorter;
     }
     
     public static TableRowSorter<DefaultTableModel> searchSort(JTable table) {
-    if (cachedHeaders == null || cachedCSVData.isEmpty()) return null;
+        if (cachedHeaders == null || cachedCSVData.isEmpty()) return null;
 
-    DefaultTableModel model = new DefaultTableModel(cachedHeaders, 0);
-        for (ObservableList<String> row : cachedCSVData) {
+        DefaultTableModel model = new DefaultTableModel(cachedHeaders, 0);
+        for (List<String> row : cachedCSVData) {
             model.addRow(row.toArray(new String[0]));
         }
 
-    table.setModel(model);
-    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-    table.setRowSorter(sorter);
-    return sorter;
+        table.setModel(model);
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        table.setRowSorter(sorter);
+        return sorter;
     }
     
     public static void filterByEmployeeID(JTable table, TableRowSorter<DefaultTableModel> sorter, String employeeID) {
