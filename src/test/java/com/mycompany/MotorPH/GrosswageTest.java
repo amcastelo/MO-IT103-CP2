@@ -23,7 +23,7 @@ public class GrosswageTest {
 
         // Set the test file path to the temporary file
         String testFilePath = tempFile.getAbsolutePath();
-        EmployeeFileManager.setTXT_FILE_PATH(testFilePath);
+        EmployeeFileManager.setEmployeeFilePath(testFilePath);
 
         // Load employees
         List<Employee> employees = EmployeeFileManager.loadEmployees();

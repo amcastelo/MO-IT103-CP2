@@ -12,11 +12,12 @@ import org.junit.jupiter.api.Test;
 
 import com.mycompany.MotorPH.swingui.DashboardPanelSwing;
 
+
 /**
  *
  * @author harvey punsalan
  */
-public class DashboardPanelSwingTest {
+public class DashBoardPanelSwingTest {
 
     private DashboardPanelSwing dashboardPanel;
 
