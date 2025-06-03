@@ -4,15 +4,14 @@
  */
 package com.mycompany.MotorPH;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.*;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.TextFieldTableCell;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
@@ -20,29 +19,29 @@ import javax.swing.table.TableRowSorter;
 
 // This EmployeeFileManager class is responsible for loading Employee data from a text file
     public class EmployeeFileManager implements FileLoader{
-        // Path to the text file containing Employee data
-        private static String TXT_FILE_PATH = "src/main/resources/Data.txt";
+        // Path to the text files containing Employee data
+        private static String employeeFilePath = "src/main/resources/Data.txt";
+        private static final String removedFilePath = "src/main/resources/removedEmployees.txt";
+        
         private static final List<Employee> employees;
         
-        public static List<ObservableList<String>> cachedCSVData = new ArrayList<>();
-        public static String[] cachedHeaders;
+        private static List<List<String>> cachedCSVData = new ArrayList<>();
+        private static String[] cachedHeaders;
         
-
-        
-    //INITIALIZE
+    // INITIALIZE
     static {
             EmployeeFileManager empFile = new EmployeeFileManager();
             employees = empFile.loadFile();
     }
     
-    //LOADS EMPLOYEE DATA
+    // LOADS EMPLOYEE DATA
     @Override
     public List<Employee> loadFile() {
     List<Employee> employees = new ArrayList<>();
     cachedCSVData.clear();      // Clear previous cache
     cachedHeaders = null;       // Reset cached headers
 
-    try (BufferedReader reader = new BufferedReader(new FileReader(TXT_FILE_PATH))) {
+    try (BufferedReader reader = new BufferedReader(new FileReader(employeeFilePath))) {
         String headerLine = reader.readLine();
         if (headerLine != null) {
             cachedHeaders = headerLine.split(","); // Cache headers from the first line
@@ -55,9 +54,8 @@ import javax.swing.table.TableRowSorter;
                 Employee employee = new Employee(employeeData.toArray(new String[0]));
                 employees.add(employee);
 
-                // Convert to ObservableList and cache it
-                ObservableList<String> observableRow = FXCollections.observableArrayList(employeeData);
-                cachedCSVData.add(observableRow);
+                // Add to cached list instead of ObservableList
+                cachedCSVData.add(new ArrayList<>(employeeData));
             }
         }
     } catch (IOException e) {
@@ -66,24 +64,9 @@ import javax.swing.table.TableRowSorter;
 
     return employees;
 }
+
     
-    public static void loadCached(TableView<ObservableList<String>> tableView) {
-            tableView.getItems().clear();
-            tableView.getColumns().clear();
-
-            if (EmployeeFileManager.cachedHeaders == null || EmployeeFileManager.cachedCSVData.isEmpty()) return;
-
-                for (int i = 0; i < EmployeeFileManager.cachedHeaders.length; i++) {
-                    final int colIndex = i;
-                    TableColumn<ObservableList<String>, String> column = new TableColumn<>(EmployeeFileManager.cachedHeaders[i]);
-                    column.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().get(colIndex)));
-                    column.setCellFactory(TextFieldTableCell.forTableColumn());
-                    tableView.getColumns().add(column);
-                }
-
-            tableView.getItems().addAll(EmployeeFileManager.cachedCSVData);
-        }
-
+    // LOADS CACHED DATA TO TABLE
     public static void loadCachedSwing(JTable table) {
         if (cachedHeaders == null || cachedCSVData.isEmpty()) return;
 
@@ -91,28 +74,165 @@ import javax.swing.table.TableRowSorter;
         DefaultTableModel model = new DefaultTableModel(cachedHeaders, 0);
 
         // Add each row of data from cachedCSVData
-        for (ObservableList<String> row : cachedCSVData) {
+        for (List<String> row : cachedCSVData) {
             model.addRow(row.toArray(new String[0]));
         }
 
         // Set model to the JTable
         table.setModel(model);
     }
-    
-    public static TableRowSorter<DefaultTableModel> searchSort(JTable table) {
-    if (cachedHeaders == null || cachedCSVData.isEmpty()) return null;
 
-    DefaultTableModel model = new DefaultTableModel(cachedHeaders, 0);
-        for (ObservableList<String> row : cachedCSVData) {
+    
+    // DELETES RECORD FROM TABLE, CACHE AND CSV FILE
+    public static void deleteRecord(String empID){
+        String tempFilePath = "src/main/resources/temp.txt";
+        String idToDelete = empID.trim();
+
+        if (idToDelete.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please enter an Employee ID.");
+            return;
+        }
+
+        boolean recordDeleted = false;
+
+        try (
+            BufferedReader reader = new BufferedReader(new FileReader(employeeFilePath));
+            BufferedWriter tempWriter = new BufferedWriter(new FileWriter(tempFilePath));
+            BufferedWriter removedWriter = new BufferedWriter(new FileWriter(removedFilePath, true))
+        ) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length > 0 && parts[0].equals(idToDelete)) {
+                    removedWriter.write(line);
+                    removedWriter.newLine();
+                    recordDeleted = true;
+                    continue;
+                }
+                tempWriter.write(line);
+                tempWriter.newLine();
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error processing file: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        // Now try deleting and renaming AFTER streams are closed
+        if (!recordDeleted) {
+            new File(tempFilePath).delete();
+            JOptionPane.showMessageDialog(null, "Record not found.");
+            return;
+        }
+
+        File originalFile = new File(employeeFilePath);
+        File tempFile = new File(tempFilePath);
+
+        // Debug
+        System.out.println("Original exists: " + originalFile.exists());
+        System.out.println("Temp exists: " + tempFile.exists());
+
+        boolean deleted = originalFile.delete();
+        System.out.println("Deleted original: " + deleted);
+
+        boolean renamed = tempFile.renameTo(originalFile);
+        System.out.println("Renamed temp: " + renamed);
+
+        if (!deleted || !renamed) {
+            JOptionPane.showMessageDialog(null, "Error updating file.");
+            return;
+        }
+
+        JOptionPane.showMessageDialog(null, "Record deleted and moved to removedEmployees.csv");
+    }
+    
+    // UPDATES RECORD ON TABLE, CACHE AND CSV FILE
+    public static void updateRecord(String[] empData) {
+    String idToUpdate = empData[0].trim();
+    String tempFilePath = "src/main/resources/temp.txt";
+
+    try (
+        BufferedReader reader = new BufferedReader(new FileReader(employeeFilePath));
+        BufferedWriter tempWriter = new BufferedWriter(new FileWriter(tempFilePath))
+    ) {
+        String line;
+        boolean recordUpdated = false;
+
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split(",");
+            if (data.length > 0 && data[0].trim().equals(idToUpdate)) {
+                // Build updated line using empData array
+                String updatedLine = String.join(",",
+                    empData[0].trim(),  // ID
+                    empData[1].trim(),  // Last Name
+                    empData[2].trim(),  // First Name
+                    empData[3].trim(),  // Birthday
+                    empData[4].trim(),  // Address
+                    empData[5].trim(),  // Phone Number
+                    empData[6].trim(),  // SSS
+                    empData[7].trim(),  // Philhealth
+                    empData[8].trim(),  // TIN
+                    empData[9].trim(),  // Pagibig
+                    empData[10].trim(), // Status
+                    empData[11].trim(), // Position
+                    empData[12].trim(), // Supervisor
+                    empData[13].trim(), // Basic Salary
+                    empData[14].trim(), // Rice Subsidy
+                    empData[15].trim(), // Phone Allowance
+                    empData[16].trim(), // Clothing Allowance
+                    empData[17].trim(), // Gross Semi
+                    empData[18].trim()  // Hourly Rate
+                );
+
+                tempWriter.write(updatedLine);
+                tempWriter.newLine();
+                recordUpdated = true;
+            } else {
+                tempWriter.write(line);
+                tempWriter.newLine();
+            }
+        }
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error processing file: " + e.getMessage());
+        e.printStackTrace();
+        return;
+    }
+
+    // Replace original file with updated temp file
+    File originalFile = new File(employeeFilePath);
+    File tempFile = new File(tempFilePath);
+
+    boolean deleted = originalFile.delete();
+    boolean renamed = tempFile.renameTo(originalFile);
+
+    if (!deleted || !renamed) {
+        JOptionPane.showMessageDialog(null, "Error updating file.");
+        return;
+    }
+
+    JOptionPane.showMessageDialog(null, "Record successfully updated.");
+}
+
+    
+    // USED FOR SORTING TABLE ON SEARCH
+    public static TableRowSorter<DefaultTableModel> searchSort(JTable table) {
+        if (cachedHeaders == null || cachedCSVData.isEmpty()) return null;
+
+        DefaultTableModel model = new DefaultTableModel(cachedHeaders, 0);
+        for (List<String> row : cachedCSVData) {
             model.addRow(row.toArray(new String[0]));
         }
 
-    table.setModel(model);
-    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-    table.setRowSorter(sorter);
-    return sorter;
+        table.setModel(model);
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+        table.setRowSorter(sorter);
+        return sorter;
     }
+
     
+    // USED FOR FILTERING BY EMPLOYEE ID
     public static void filterByEmployeeID(JTable table, TableRowSorter<DefaultTableModel> sorter, String employeeID) {
         if (employeeID.trim().isEmpty()) {
             sorter.setRowFilter(null); // Show all if empty
@@ -144,18 +264,12 @@ import javax.swing.table.TableRowSorter;
         }
         return tokens;
     }      
-
+    
     /**
      * @return the employees
      */
     public static List<Employee> getEmployeeModelList(){
-        return employees;
+        return List.copyOf(employees);
     }
 
-    /** Set the path to the text file containing Employee data
-     *  @param aTXT_FILE_PATH the TXT_FILE_PATH to set
-     */
-    public static void setTXT_FILE_PATH(String aTXT_FILE_PATH) {
-        TXT_FILE_PATH = aTXT_FILE_PATH;
-    }
 }

@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.MotorPH.swingui;
+import com.mycompany.MotorPH.EmployeeFileManager;
 import com.mycompany.MotorPH.swingui.EmployeePanelSwing;
 import com.mycompany.MotorPH.swingui.DashboardPanelSwing;
 import java.awt.CardLayout;
@@ -17,7 +18,11 @@ import org.pushingpixels.trident.Timeline;
  *
  * @author adamm
  */
-public class MotorPHAppSwing extends javax.swing.JFrame {
+public class MotorPHAppSwing extends javax.swing.JFrame implements EmployeePanelListener {
+    private EmployeePanelSwing empPanel;
+    private PayrollPanelSwing payrollPanel;
+    
+    private EmployeeFileManager employeeFileManager = new EmployeeFileManager();
     CardLayout cl = new CardLayout();
     /**
      * Creates new form NewJFrame
@@ -82,6 +87,7 @@ public class MotorPHAppSwing extends javax.swing.JFrame {
         jMenu1.setText("jMenu1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         NavDrawer.setBackground(new java.awt.Color(30, 42, 86));
         NavDrawer.setForeground(new java.awt.Color(30, 42, 86));
@@ -284,9 +290,11 @@ public class MotorPHAppSwing extends javax.swing.JFrame {
     }
     
     public void initContentContainer(){
-        EmployeePanelSwing empPanel = new EmployeePanelSwing();
-        PayrollPanelSwing payrollPanel = new PayrollPanelSwing();
+        empPanel = new EmployeePanelSwing(employeeFileManager);
+        payrollPanel = new PayrollPanelSwing(employeeFileManager, empPanel);
         DashboardPanelSwing dasboardPanel = new DashboardPanelSwing();
+        
+        empPanel.setEmployeeDataListener(this);
         
         contentPanel.add(dasboardPanel, "DashboardPage");
         contentPanel.add(empPanel, "EmployeePage");
@@ -304,15 +312,22 @@ public class MotorPHAppSwing extends javax.swing.JFrame {
     }
     
     public void scaleButtonIcon(JButton button, String resourcePath) {
-    URL imgUrl = getClass().getResource(resourcePath);
-    if (imgUrl != null) {
-        ImageIcon originalIcon = new ImageIcon(imgUrl);
-        Image scaledImage = originalIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-        button.setIcon(new ImageIcon(scaledImage));
-    } else {
-        System.err.println("Image not found: " + resourcePath);
+        URL imgUrl = getClass().getResource(resourcePath);
+        if (imgUrl != null) {
+            ImageIcon originalIcon = new ImageIcon(imgUrl);
+            Image scaledImage = originalIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            button.setIcon(new ImageIcon(scaledImage));
+        } else {
+            System.err.println("Image not found: " + resourcePath);
+        }
     }
-}
+    
+    @Override
+    public void onEmployeeDataSelected(String[] empData) {
+        payrollPanel.setTextfieldsData(empData);
+        
+        cl.show(contentPanel, "PayrollPage");
+    }
 
     
     public void highlightNavButtonHover(JButton button) {

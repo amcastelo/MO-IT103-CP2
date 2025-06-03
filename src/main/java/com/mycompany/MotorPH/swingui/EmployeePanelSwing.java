@@ -1,11 +1,15 @@
-/*
+    /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package com.mycompany.MotorPH.swingui;
 
 import com.mycompany.MotorPH.EmployeeFileManager;
-import javax.swing.RowFilter;
+import java.awt.Component;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
@@ -16,13 +20,16 @@ import javax.swing.table.TableRowSorter;
  * @author adamm
  */
 public class EmployeePanelSwing extends javax.swing.JPanel {
-    EmployeeFileManager employeeFileManager = new EmployeeFileManager();
+    private EmployeePanelListener employeePanelListener;
+    private EmployeeFileManager employeeFileManager;
     TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<DefaultTableModel>();
     
     /**
      * Creates new form EmployeePanel
+     * @param employeeFileManager
      */
-    public EmployeePanelSwing() {
+    public EmployeePanelSwing(EmployeeFileManager employeeFileManager) {
+        this.employeeFileManager = employeeFileManager;
         initComponents();
         initializeEmpTable();
     }
@@ -40,6 +47,8 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
         empTable = new javax.swing.JTable();
         ReloadButton = new javax.swing.JButton();
         searchField = new javax.swing.JTextField();
+        viewButton = new javax.swing.JButton();
+        newEmployeeButton = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(744, 600));
 
@@ -66,6 +75,20 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
 
         searchField.setToolTipText("");
 
+        viewButton.setText("View");
+        viewButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewButtonActionPerformed(evt);
+            }
+        });
+
+        newEmployeeButton.setText("New Employee");
+        newEmployeeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newEmployeeButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -74,8 +97,11 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 732, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(newEmployeeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(viewButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ReloadButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -87,20 +113,66 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
                 .addContainerGap(118, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ReloadButton)
-                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(viewButton)
+                    .addComponent(newEmployeeButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    // RELOADS JTABLE
     private void ReloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReloadButtonActionPerformed
         employeeFileManager.loadCachedSwing(empTable);
     }//GEN-LAST:event_ReloadButtonActionPerformed
+    
+    // SET LISTENER FOR PASSING ACTION
+    public void setEmployeeDataListener(EmployeePanelListener listener) {
+        this.employeePanelListener = listener;
+    }
+    
+    // VIEWS EMPLOYEES FULL DETAILS
+    private void viewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewButtonActionPerformed
+        int selectedRow = empTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a row first.");
+            return;
+        }
 
+        String[] rowData = new String[empTable.getColumnCount()];
+        for (int i = 0; i < empTable.getColumnCount(); i++) {
+            Object val = empTable.getValueAt(selectedRow, i);
+            rowData[i] = val != null ? val.toString() : "";
+        }
+
+        if (employeePanelListener != null) {
+            employeePanelListener.onEmployeeDataSelected(rowData);
+        }
+    }//GEN-LAST:event_viewButtonActionPerformed
+    
+    // CREATE A NEW EMPLOYEE, AN EMPLOYEE CREATION FORM OPEN
+    private void newEmployeeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newEmployeeButtonActionPerformed
+        NewEmployeeForm dialog = new NewEmployeeForm((JFrame) SwingUtilities.getWindowAncestor(this), true);
+        dialog.setVisible(true); 
+
+        // After dialog closes, reload the file and refresh JTable from cache
+        refreshEmployeeTable();
+        sorter = EmployeeFileManager.searchSort(empTable); // reset sorter for new data
+    }//GEN-LAST:event_newEmployeeButtonActionPerformed
+    
+    // VALIDATES IF A ROW IS SELECTED
+    public static int getSelectedRowOrShowMessage(JTable table, Component parentComponent) {
+        int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(parentComponent, "Please select a row.");
+            }
+        return selectedRow;
+    }      
+    
+    // INITIALIZER FOR EMPLOYEE TABLE
     private void initializeEmpTable() {
-        employeeFileManager.loadFile();
-        employeeFileManager.loadCachedSwing(empTable); // Load data
+        refreshEmployeeTable();
         sorter = employeeFileManager.searchSort(empTable);
         
 
@@ -119,11 +191,27 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
             }
         });
     }
+    
+    public void refreshEmployeeTable() {
+        employeeFileManager.loadFile();
+        employeeFileManager.loadCachedSwing(empTable);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ReloadButton;
     private javax.swing.JTable empTable;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton newEmployeeButton;
     private javax.swing.JTextField searchField;
+    private javax.swing.JButton viewButton;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * @param empTable the empTable to set
+     */
+    public void setEmpTable(JTable empTable) {
+        this.empTable = empTable;
+    }
+    
+    
 }

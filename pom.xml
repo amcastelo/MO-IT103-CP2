@@ -50,14 +50,7 @@
             <version>3.12.4</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- JavaFX FXML dependency -->
-        <dependency>
-            <groupId>org.jfxcore</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>18-ea+1</version>
-            <type>jar</type>
-        </dependency>
+        <!-- FlatLaf for better Swing look -->
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
