@@ -18,3 +18,6 @@ To run this MotorPH Payroll System, follow these simple steps:
 ### Members:
 1. Harvey Punsalan
 1. Adam Martel Castelo
+
+Username: AdminGarcia
+Password: 10001
