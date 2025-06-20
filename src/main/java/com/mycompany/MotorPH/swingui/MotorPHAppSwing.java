@@ -60,11 +60,9 @@ public class MotorPHAppSwing extends javax.swing.JFrame implements EmployeePanel
             java.util.logging.Logger.getLogger(MotorPHAppSwing.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
-        MotorPHAppSwing motorPHApp = new MotorPHAppSwing();
-        motorPHApp.toFront();
-        motorPHApp.requestFocus();
-
+        java.awt.EventQueue.invokeLater(() -> {
+        new MotorPHAppSwing().setVisible(true);
+        });
     }
     
 
@@ -337,7 +335,6 @@ public class MotorPHAppSwing extends javax.swing.JFrame implements EmployeePanel
         styleFlatLafButton(button, "#1E2A56", "#FFFFFF");
     }
     
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLayeredPane NavDrawer;
     private javax.swing.JPanel contentPanel;

@@ -22,6 +22,7 @@ public class NewEmployeeForm extends javax.swing.JDialog {
     private static final Logger logger = Logger.getLogger(NewEmployeeForm.class.getName());
     private final String employeeFilePath = "src/main/resources/Data.txt";
     private final String removedFilePath = "src/main/resources/removedEmployees.txt";
+    
     /**
      * Creates new form NewEmployeeForm
      * @param parent

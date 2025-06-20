@@ -211,7 +211,5 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
      */
     public void setEmpTable(JTable empTable) {
         this.empTable = empTable;
-    }
-    
-    
+    }   
 }
