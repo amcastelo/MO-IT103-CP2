@@ -23,4 +23,5 @@ To run this MotorPH Payroll System, follow these simple steps:
 **Username**: `AdminGarcia`  
 **Password**: `10001`
 
-
+### Presentation Link
+https://drive.google.com/file/d/15WL_WPAyznE1WsXHccDERYgiEzd1YJvn/view?usp=sharing
