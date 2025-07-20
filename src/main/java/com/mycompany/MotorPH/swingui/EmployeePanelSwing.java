@@ -7,6 +7,7 @@ package com.mycompany.MotorPH.swingui;
 import com.mycompany.MotorPH.EmployeeFileManager;
 import java.awt.Component;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -147,14 +148,30 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
             return;
         }
 
-        String[] rowData = new String[empTable.getColumnCount()];
-        for (int i = 0; i < empTable.getColumnCount(); i++) {
-            Object val = empTable.getValueAt(selectedRow, i);
-            rowData[i] = val != null ? val.toString() : "";
+        // Get the Employee # value from the selected row
+        Object empNumObj = empTable.getValueAt(selectedRow, 0); // Assuming column 0 is "Employee #"
+        if (empNumObj == null) {
+            JOptionPane.showMessageDialog(this, "Employee # not found in selected row.");
+            return;
+        }
+        String empNum = empNumObj.toString().trim();
+
+        // Find the corresponding full row from cachedCSVData
+        List<String> matchingRow = null;
+        for (List<String> row : employeeFileManager.cachedCSVData) {
+            if (!row.isEmpty() && row.get(0).trim().equals(empNum)) { // Assuming index 0 is also Employee #
+                matchingRow = row;
+                break;
+            }
         }
 
-        if (employeePanelListener != null) {
-            employeePanelListener.onEmployeeDataSelected(rowData);
+        if (matchingRow != null) {
+            String[] rowData = matchingRow.toArray(new String[0]);
+            if (employeePanelListener != null) {
+                employeePanelListener.onEmployeeDataSelected(rowData);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Full data for selected employee not found.");
         }
     }//GEN-LAST:event_viewButtonActionPerformed
     

@@ -27,7 +27,7 @@ import javax.swing.table.TableRowSorter;
         
         private static final List<Employee> employees;
         
-        private static List<List<String>> cachedCSVData = new ArrayList<>();
+        public static List<List<String>> cachedCSVData = new ArrayList<>();
         private static String[] cachedHeaders;
         
     // INITIALIZE
