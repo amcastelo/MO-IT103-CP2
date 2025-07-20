@@ -182,7 +182,6 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
 
         // After dialog closes, reload the file and refresh JTable from cache
         refreshEmployeeTable();
-        sorter = EmployeeFileManager.searchSort(empTable); // reset sorter for new data
     }//GEN-LAST:event_newEmployeeButtonActionPerformed
     
     // VALIDATES IF A ROW IS SELECTED
