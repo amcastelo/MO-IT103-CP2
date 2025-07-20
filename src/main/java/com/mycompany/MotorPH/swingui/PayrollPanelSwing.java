@@ -553,7 +553,7 @@ public class PayrollPanelSwing extends javax.swing.JPanel {
         int response = JOptionPane.showConfirmDialog(
         null,
         "Are you sure you want to update this record?",
-        "Confirm Deletion",
+        "Confirm Update",
         JOptionPane.YES_NO_OPTION,
         JOptionPane.WARNING_MESSAGE
         );
