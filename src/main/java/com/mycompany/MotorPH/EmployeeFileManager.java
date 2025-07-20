@@ -10,10 +10,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -65,7 +67,6 @@ import javax.swing.table.TableRowSorter;
     return employees;
 }
 
-    
     // LOADS CACHED DATA TO TABLE
     public static void loadCachedSwing(JTable table) {
         if (cachedHeaders == null || cachedCSVData.isEmpty()) return;
@@ -81,8 +82,37 @@ import javax.swing.table.TableRowSorter;
         // Set model to the JTable
         table.setModel(model);
     }
-
     
+    public void loadSelectedIdentifiersToSwing(JTable table) {
+        // These are the indexes of the columns you want to keep
+        List<Integer> selectedIndexes = Arrays.asList(0, 1, 2, 6, 7, 8, 9);
+
+        // Ensure the file is loaded
+        loadFile();
+
+        // Build new table model
+        DefaultTableModel model = new DefaultTableModel();
+
+        // Add column headers using the selected indexes
+        for (int index : selectedIndexes) {
+            model.addColumn(cachedHeaders[index]); // since cachedHeaders is a String[]
+        }
+
+        // Add rows with only the selected columns
+        for (List<String> row : cachedCSVData) {
+            List<String> filteredRow = new ArrayList<>();
+            for (int index : selectedIndexes) {
+                filteredRow.add(row.get(index));
+            }
+            model.addRow(filteredRow.toArray());
+        }
+
+        // Set the model to the table
+        table.setModel(model);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    }
+
+
     // DELETES RECORD FROM TABLE, CACHE AND CSV FILE
     public static void deleteRecord(String empID){
         String tempFilePath = "src/main/resources/temp.txt";

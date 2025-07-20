@@ -1,4 +1,4 @@
-    /*
+     /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
@@ -6,6 +6,7 @@ package com.mycompany.MotorPH.swingui;
 
 import com.mycompany.MotorPH.EmployeeFileManager;
 import java.awt.Component;
+import java.util.Arrays;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -13,6 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
 /**
@@ -30,8 +32,13 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
      */
     public EmployeePanelSwing(EmployeeFileManager employeeFileManager) {
         this.employeeFileManager = employeeFileManager;
-        initComponents();
-        initializeEmpTable();
+    initComponents();
+
+    // Defer table setup until GUI is fully loaded
+    SwingUtilities.invokeLater(() -> {
+        initializeEmpTable(); // THIS NOW WORKS
+    });
+
     }
 
     /**
@@ -124,7 +131,7 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
 
     // RELOADS JTABLE
     private void ReloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReloadButtonActionPerformed
-        employeeFileManager.loadCachedSwing(empTable);
+        employeeFileManager.loadSelectedIdentifiersToSwing(empTable);
     }//GEN-LAST:event_ReloadButtonActionPerformed
     
     // SET LISTENER FOR PASSING ACTION
@@ -173,9 +180,7 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
     // INITIALIZER FOR EMPLOYEE TABLE
     private void initializeEmpTable() {
         refreshEmployeeTable();
-        sorter = employeeFileManager.searchSort(empTable);
         
-
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { search(); }
             public void removeUpdate(DocumentEvent e) { search(); }
@@ -194,7 +199,9 @@ public class EmployeePanelSwing extends javax.swing.JPanel {
     
     public void refreshEmployeeTable() {
         employeeFileManager.loadFile();
-        employeeFileManager.loadCachedSwing(empTable);
+        employeeFileManager.loadSelectedIdentifiersToSwing(empTable);
+        sorter = new TableRowSorter<>((DefaultTableModel) empTable.getModel());
+        empTable.setRowSorter(sorter);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

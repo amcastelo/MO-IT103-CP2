@@ -107,7 +107,7 @@ public class MotorPHAppSwing extends javax.swing.JFrame implements EmployeePanel
         employeePageButton.setText("Employees");
         employeePageButton.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 1));
         employeePageButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        employeePageButton.setIconTextGap(15);
+        employeePageButton.setIconTextGap(10);
         employeePageButton.setMaximumSize(new java.awt.Dimension(200, 50));
         employeePageButton.setMinimumSize(new java.awt.Dimension(50, 50));
         employeePageButton.setPreferredSize(new java.awt.Dimension(200, 50));
@@ -147,11 +147,11 @@ public class MotorPHAppSwing extends javax.swing.JFrame implements EmployeePanel
         });
 
         dashboardPageButton.setText("Dashboard");
-        dashboardPageButton.setBorder(null);
+        dashboardPageButton.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 1));
         dashboardPageButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        dashboardPageButton.setIconTextGap(10);
         dashboardPageButton.setMaximumSize(new java.awt.Dimension(200, 50));
         dashboardPageButton.setMinimumSize(new java.awt.Dimension(50, 50));
-        dashboardPageButton.setOpaque(true);
         dashboardPageButton.setPreferredSize(new java.awt.Dimension(200, 50));
         dashboardPageButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -163,7 +163,7 @@ public class MotorPHAppSwing extends javax.swing.JFrame implements EmployeePanel
         });
         dashboardPageButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dashboardPageButtonemployeePageButton(evt);
+                dashboardPageButton(evt);
             }
         });
 
@@ -176,12 +176,16 @@ public class MotorPHAppSwing extends javax.swing.JFrame implements EmployeePanel
         NavDrawerLayout.setHorizontalGroup(
             NavDrawerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(NavDrawerLayout.createSequentialGroup()
-                .addGroup(NavDrawerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(dashboardPageButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(NavDrawerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(employeePageButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(payrollPageButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(NavDrawerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(NavDrawerLayout.createSequentialGroup()
+                        .addGroup(NavDrawerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(employeePageButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(payrollPageButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, NavDrawerLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(dashboardPageButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         NavDrawerLayout.setVerticalGroup(
             NavDrawerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -262,9 +266,9 @@ public class MotorPHAppSwing extends javax.swing.JFrame implements EmployeePanel
         unhighlightNavButtonHover(dashboardPageButton);
     }//GEN-LAST:event_dashboardPageButtonMouseExited
 
-    private void dashboardPageButtonemployeePageButton(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardPageButtonemployeePageButton
+    private void dashboardPageButton(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dashboardPageButton
         cl.show(contentPanel, "DashboardPage");
-    }//GEN-LAST:event_dashboardPageButtonemployeePageButton
+    }//GEN-LAST:event_dashboardPageButton
     
     
     private void navDrawerEntered(){
@@ -306,6 +310,7 @@ public class MotorPHAppSwing extends javax.swing.JFrame implements EmployeePanel
         styleFlatLafButton(payrollPageButton, "#1E2A56", "#FFFFFF");
         scaleButtonIcon(employeePageButton, "/icons/Employee.PNG");
         scaleButtonIcon(payrollPageButton, "/icons/Payroll.PNG");
+        scaleButtonIcon(dashboardPageButton, "/icons/Dashboard.PNG");
         
     }
     
